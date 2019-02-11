@@ -1,4 +1,5 @@
 #include "clock.h"
+#include "data.h"
 #include "display.h"
 #include "debug.h"
 
@@ -11,15 +12,9 @@ char clock_isPointOn = 1;
 long clock_last_read = 0;
 long clock_last_changed = 0;
 
-void clock_set_hour(int h) {
+void clock_set_time(int h, int m, int s) {
   clock_hour = h;
-}
-
-void clock_set_minute(int m) {
   clock_minute = m;  
-}
-
-void clock_set_second(int s) {
   clock_second = s;
 }
 
@@ -39,7 +34,7 @@ void clock_increment() {
       clock_second++;
       if(clock_second==60) {
         clock_minute++;
-        clock_second -= 60;
+        clock_second = 0;
       }
       if(clock_minute==60) {
         clock_hour++;
@@ -53,6 +48,9 @@ void clock_increment() {
       }      
       clock_last_changed += 1000;
     }
+    if(clock_hour == 0 && clock_minute == 0) {
+      data_load_time();
+    }
   }
 }
 
@@ -63,4 +61,3 @@ void clock_display() {
   int d3 = clock_minute%10;
   display_write(d0, d1, d2, d3);
 }
-

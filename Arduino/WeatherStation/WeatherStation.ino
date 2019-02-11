@@ -1,9 +1,9 @@
 #include "config.h"
 #include "server.h"
+#include "data.h"
 #include "debug.h"
 #include "net.h"
 #include "temp.h"
-#include "mqtt.h"
 #include "clock.h"
 #include "weather.h"
 #include "timer.h"
@@ -33,21 +33,23 @@ void setup() {
   server_register_handlers();
   server.begin();
   Serial.println("Server started");
-  
+
+  // Removed while testing
   tm1637.init();
   tm1637.set(7); // Set brightness to 7
   dht.begin();
-  mqtt_init();
   button_init();
   leds_init();
+  
+  data_load_weather_data();
+  data_load_time();
 }
 
 void loop() {
   server.handleClient();
   debug_write_dots_while_handling();
-  load_data();
   timer_display();
-  mqtt_handle();
   button_handle_press();
+  load_data();
   delay(1);
 }
