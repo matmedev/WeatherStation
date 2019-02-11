@@ -51,4 +51,3 @@ void net_init() {
     net_setup_ap();
   }
 }
-

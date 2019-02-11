@@ -1,10 +1,10 @@
 #include "weather.h"
-#include "mqtt.h"
+#include "data.h"
 #include "display.h"
 
 #include "Arduino.h"
 
-#define WEATHER_REFRESH_DELAY 1200000 //20 minutes
+#define WEATHER_REFRESH_DELAY 1200000 // 20 minutes
 
 int weather_temp_c = 9999;
 
@@ -22,7 +22,7 @@ void weather_set_temp(float t) {
 void weather_load() {
   long now = millis();
   if(now>weather_last_refreshed+WEATHER_REFRESH_DELAY) {
-    mqtt_request_weather();
+    data_load_weather_data();
     weather_last_refreshed = now;
   }
 }
