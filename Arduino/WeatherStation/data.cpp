@@ -10,7 +10,7 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-#include <time.h>
+#include <TimeLib.h>
 
 void printString(String str) {
   char arr[str.length()];
@@ -41,33 +41,40 @@ int mapToWeatherCode(String condition_str) {
   }
 }
 
-int getDSTCorrection(struct tm *currentTime) {
-  byte currentMonth = currentTime->tm_mon + 1;
-  if(3 <= currentMonth && currentMonth <= 10) {
-    byte currentYear = currentTime->tm_year + 1900;
-    if(3 == currentMonth) {
-      int stpMarchDay = (31 - ((int) floor(currentYear*5.0/4) + 4) % 7);
-      if(currentTime->tm_mday < stpMarchDay) { // in March, before the STP start day
-        return DEFAULT_TIME_ZONE;
-      } else if(stpMarchDay < currentTime->tm_mday) { // in March, after the STP start day
-        return DEFAULT_TIME_ZONE + 1;
+int getDSTCorrection() {
+//  debugln("getDSTCorrection");
+//  debug("current month=");
+//  debugln(month());
+  if(3 <= month() && month() <= 10) {
+//    debugln("between march and october");
+//    debug("current year=");
+//    debugln(year());
+    if(3 == month()) {
+//      debugln("in march");
+      int stpMarchDay = (31 - ((int) floor(year()*5.0/4) + 4) % 7);
+//      debug("stpMarchDay");
+//      debugln(stpMarchDay);
+      if(day() < stpMarchDay) { // in March, before the STP start day
+        return 0;
+      } else if(stpMarchDay < day()) { // in March, after the STP start day
+        return 1;
       } else { // in March, on the STP start day
         // STP starts at 1:00 am, before that no adjustment is needed
-        if(currentTime->tm_hour < 1) {
+        if(hour() < 1) {
             return 0;
         } else {
             return 1;
         }
       }
-    } else if(10 == currentMonth) {
-      int stpOctoberDay = (31 - ((int) floor(currentYear*5.0/4) + 1) % 7);
-      if(currentTime->tm_mday < stpOctoberDay) { // in October, before the STP end day
-        return DEFAULT_TIME_ZONE + 1;
-      } else if(stpOctoberDay < currentTime->tm_mday) { // in October, after the STP end day
-        return DEFAULT_TIME_ZONE;
+    } else if(10 == month()) {
+      int stpOctoberDay = (31 - ((int) floor(year()*5.0/4) + 1) % 7);
+      if(day() < stpOctoberDay) { // in October, before the STP end day
+        return 1;
+      } else if(stpOctoberDay < day()) { // in October, after the STP end day
+        return 0;
       } else { // in October, on the STP end day
         // STP ends at 1:00 am, after that no adjustment is needed
-        if(currentTime->tm_hour < 1) {
+        if(hour() < 1) {
           return 1;
         } else {
           return 0;
@@ -118,6 +125,7 @@ void data_load_weather_data() {
   result.toCharArray(jsonArray, sizeof(jsonArray));
   jsonArray[result.length() + 1] = '\0';
 
+
   StaticJsonBuffer<1024> json_buf;
   JsonObject &root = json_buf.parseObject(jsonArray);
   if(!root.success()) {
@@ -132,19 +140,17 @@ void data_load_weather_data() {
 }
 
 void data_load_time() {
-  time_t current_time = 0;
-  
-  configTime(DEFAULT_TIME_ZONE * 3600, 0, NTP_SERVER_1, NTP_SERVER_2);
-  while(!current_time) {
-    time(&current_time);
-    delay(250);
-  }
-
-  time_t now = time(&current_time);
-  struct tm *rtime = localtime(&now);
+//  debug(hour());
+//  debug(":");
+//  debug(minute());
+//  debug(":");
+//  debug(second());
+//  debug(" (");
+//  debug(getDSTCorrection());
+//  debugln(")");
   
   clock_set_time(
-    rtime->tm_hour + getDSTCorrection(rtime),
-    rtime->tm_min,
-    rtime->tm_sec);
+    hour() + getDSTCorrection(),
+    minute(),
+    second());
 }

@@ -3,6 +3,7 @@
 #include "data.h"
 #include "debug.h"
 #include "net.h"
+#include "ntp.h"
 #include "temp.h"
 #include "clock.h"
 #include "weather.h"
@@ -34,13 +35,15 @@ void setup() {
   server.begin();
   Serial.println("Server started");
 
-  // Removed while testing
+  ntp_init();
+
+  // Removed while testing:
   tm1637.init();
   tm1637.set(7); // Set brightness to 7
   dht.begin();
   button_init();
   leds_init();
-  
+
   data_load_weather_data();
   data_load_time();
 }

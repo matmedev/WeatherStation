@@ -57,9 +57,15 @@ void temp_load() {
     average_temp /= (TEMP_BUFFER_SIZE-count_correction);
     debug("Average corrected=");
     debugln(average_temp);
-    last_average = round(average_temp);
-    debug("Average rounded=");
-    debugln(last_average);
+    if(isnan(average_temp)) {
+      debugln("Measurement failed :(");
+      debug("Temperature stays=");
+      debugln(last_average);
+    } else {
+      last_average = round(average_temp);
+      debug("Average rounded=");
+      debugln(last_average);
+    }
   } 
 }
 
@@ -69,4 +75,3 @@ void temp_display() {
   display_point(0);
   display_write(d0, d1, 18, 12);
 }
-
