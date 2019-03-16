@@ -32,16 +32,16 @@ void clock_increment() {
   if(now>=clock_last_changed+1000) {
     while(now-clock_last_changed>=1000) {
       clock_second++;
-      if(clock_second==60) {
+      if(clock_second>=60) {
         clock_minute++;
         clock_second = 0;
       }
-      if(clock_minute==60) {
+      if(clock_minute>=60) {
         clock_hour++;
         clock_minute=0;
         clock_second=0;
       }
-      if(clock_hour==24) {
+      if(clock_hour>=24) {
         clock_hour=0;
         clock_minute=0;
         clock_second=0;
