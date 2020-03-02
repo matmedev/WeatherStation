@@ -37,7 +37,6 @@ void setup() {
 
   ntp_init();
 
-  // Removed while testing:
   tm1637.init();
   tm1637.set(7); // Set brightness to 7
   dht.begin();
