@@ -12,4 +12,4 @@ To build the code, add a ```credentials.h``` file with the following content:
 
 ```
 
-You can get your own API_KEY by registering at [Apixu](https://www.apixu.com/).
+You can get your own API_KEY by registering at [OpenWeatherMap](https://openweathermap.org/).
