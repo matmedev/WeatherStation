@@ -13,3 +13,7 @@ void display_write(int d0, int d1, int d2, int d3) {
   tm1637.display(2, d2);
   tm1637.display(3, d3);
 }
+
+void display_set_brightness(char brightness) {
+  tm1637.set(brightness);
+}

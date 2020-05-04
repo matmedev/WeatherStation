@@ -51,6 +51,12 @@ void clock_increment() {
     if(clock_hour == 0 && clock_minute == 0) {
       data_load_time();
     }
+
+    if (NIGHT_START <= clock_hour || clock_hour <= DAY_START) {
+      display_set_brightness(2);
+    } else {
+      display_set_brightness(7);
+    }
   }
 }
 
